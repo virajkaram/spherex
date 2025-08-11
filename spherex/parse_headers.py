@@ -54,7 +54,7 @@ def write_records_for_directory(dir_path: str | Path, out_path: str | Path):
     """
     dir_path = Path(dir_path)
     out_path = Path(out_path)
-    file_list = sorted(glob(str(dir_path / "*/*.fits")))
+    file_list = sorted(glob(str(dir_path / "*/*/*/*.fits")))
     records = []
     for file_path in tqdm(file_list):
         if 'cutout' in file_path.lower():
