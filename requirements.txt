@@ -2,7 +2,6 @@ astropy
 numpy
 pandas
 matplotlib
-astropy
 photutils
 tqdm
 pydantic
