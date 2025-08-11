@@ -7,16 +7,16 @@ name = "spherex"
 version = "0.0.1"
 requires-python = ">=3.10,<3.14"
 dependencies = [
-    "astropy>=7.1.0",
-    "numpy>=2.3.0",
+    "astropy",
+    "numpy",
     "pandas",
     "matplotlib",
-    "photutils>=2.2.0",
+    "photutils",
     "tqdm",
     "pydantic",
-    "sqlalchemy>=2.0.42",
-    "psycopg>=3.2.9",
+    "sqlalchemy",
+    "psycopg",
     "geoalchemy2",
-    "pyarrow>=21.0.0",
-    "fastparquet>=2024.11.0",
+    "pyarrow",
+    "fastparquet",
 ]
