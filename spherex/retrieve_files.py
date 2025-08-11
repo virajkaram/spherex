@@ -1,0 +1,41 @@
+import argparse
+import logging
+from spherex.tables import ImagesTable
+from spherex.database.transactions import select_from_table
+from spherex.database.constraints import DBQueryConstraints
+from spherex.log import get_logger
+
+
+logger = logging.getLogger(__name__)
+
+def get_images_within_coordinates(ra: float, dec: float, radius_deg: float = 5.0):
+    """
+    Retrieve files within a certain radius of given coordinates from the database.
+
+    :param ra: Right Ascension in degrees
+    :param dec: Declination in degrees
+    :param radius_deg: Radius in degrees to search within
+    :return: List of file paths
+    """
+    constraints = DBQueryConstraints()
+    constraints.add_postgis_within_constraint(ra=ra,
+                                              dec=dec,
+                                              footprint_column_name='footprint')
+
+    results = select_from_table(sql_table=ImagesTable,
+                                db_constraints=constraints,
+                                output_columns=['savepath']
+                                )
+    return results
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Retrieve files within a certain radius of given coordinates.")
+    parser.add_argument("--ra", type=float, required=True, help="Right Ascension in degrees")
+    parser.add_argument("--dec", type=float, required=True, help="Declination in degrees")
+    parser.add_argument("--radius", type=float, default=5.0, help="Search radius in degrees (default: 5.0)")
+    args = parser.parse_args()
+
+    results = get_images_within_coordinates(ra=args.ra, dec=args.dec, radius_deg=args.radius)
+    logger = get_logger()
+    logger.info(f"Found {len(results)} files within {args.radius} degrees of RA={args.ra}, Dec={args.dec}.")
