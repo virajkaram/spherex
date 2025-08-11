@@ -13,13 +13,12 @@ OUTPUT_DIR = os.getenv("SPHEREX_OUTPUT_DIR", None)
 if OUTPUT_DIR is None:
     raise ValueError("Please provide a valid output directory in the environment variable SPHEREX_OUTPUT_DIR.")
 
-def extract_aperture_photometry(ra, dec, search_radius=5.0,
+def extract_aperture_photometry(ra, dec,
                                 aperture_radius=APERTURE_RADIUS):
     """
     Main function to extract aperture photometry from images within a certain radius of given coordinates.
     """
-    xmatch_filenames_df = get_images_within_coordinates(ra=ra, dec=dec,
-                                            radius_deg=search_radius)
+    xmatch_filenames_df = get_images_within_coordinates(ra=ra, dec=dec)
     logger.info(f"Found {len(xmatch_filenames_df)} files.")
 
     if len(xmatch_filenames_df) > 0:
@@ -43,13 +42,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Perform aperture photometry on images within a certain radius of given coordinates.")
     parser.add_argument("--ra", type=float, required=True, help="Right Ascension in degrees")
     parser.add_argument("--dec", type=float, required=True, help="Declination in degrees")
-    parser.add_argument("--search_radius", type=float, default=5.0, help="Search radius in degrees (default: 5.0)")
     parser.add_argument("--aperture_radius", type=float, default=3.0, help="Aperture radius in pixels (default: 3.0)")
     args = parser.parse_args()
 
     logger = get_logger()
 
     extract_aperture_photometry(ra=args.ra, dec=args.dec,
-                                search_radius=args.search_radius,
                                 aperture_radius=args.aperture_radius)
 

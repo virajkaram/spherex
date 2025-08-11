@@ -8,13 +8,12 @@ from spherex.log import get_logger
 
 logger = logging.getLogger(__name__)
 
-def get_images_within_coordinates(ra: float, dec: float, radius_deg: float = 5.0):
+def get_images_within_coordinates(ra: float, dec: float):
     """
     Retrieve files within a certain radius of given coordinates from the database.
 
     :param ra: Right Ascension in degrees
     :param dec: Declination in degrees
-    :param radius_deg: Radius in degrees to search within
     :return: List of file paths
     """
     constraints = DBQueryConstraints()
