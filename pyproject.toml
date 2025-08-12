@@ -15,6 +15,7 @@ dependencies = [
     "tqdm",
     "pydantic",
     "sqlalchemy",
+    "sqlalchemy_utils",
     "psycopg",
     "geoalchemy2",
     "pyarrow",
