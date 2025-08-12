@@ -26,9 +26,9 @@ def insert_record_into_table(new_entry: dict, sql_table: Type[BaseTable],
     try:
         _insert_in_table(new_entry=new_entry, sql_table=sql_table,
                          returning_keys=returning_keys)
-        logger.info(f"Inserted record {new_entry} into table {sql_table.__tablename__}")
+        logger.debug(f"Inserted record {new_entry} into table {sql_table.__tablename__}")
     except IntegrityError as e:
-        logger.info(f"Found duplicate entry for record: {new_entry}, skipping.")
+        logger.debug(f"Found duplicate entry for record: {new_entry}, skipping.")
 
 
 def ingest_single_file_into_table(file_path: Path, table: Type[BaseTable]):
@@ -70,7 +70,7 @@ def ingest_images_from_file(file_path: Path):
     """
     logger.info(f"Ingesting images from parquet file: {file_path}")
     df = pd.read_parquet(file_path)
-    for idx, row in df.iterrows():
+    for idx, row in tqdm(df.iterrows()):
         new_values = row.to_dict()
         insert_record_into_table(new_entry=new_values, sql_table=ImagesTable,
                                  returning_keys="uimageid")

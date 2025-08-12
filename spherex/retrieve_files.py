@@ -32,9 +32,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Retrieve files within a certain radius of given coordinates.")
     parser.add_argument("--ra", type=float, required=True, help="Right Ascension in degrees")
     parser.add_argument("--dec", type=float, required=True, help="Declination in degrees")
-    parser.add_argument("--radius", type=float, default=5.0, help="Search radius in degrees (default: 5.0)")
     args = parser.parse_args()
 
-    results = get_images_within_coordinates(ra=args.ra, dec=args.dec, radius_deg=args.radius)
+    results = get_images_within_coordinates(ra=args.ra, dec=args.dec)
     logger = get_logger()
-    logger.info(f"Found {len(results)} files within {args.radius} degrees of RA={args.ra}, Dec={args.dec}.")
+    logger.info(f"Found {len(results)} files containing RA={args.ra}, Dec={args.dec}.")
