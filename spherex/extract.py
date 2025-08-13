@@ -5,8 +5,8 @@ from astropy.io import fits
 from astropy.wcs import WCS
 from photutils.aperture import CircularAperture, aperture_photometry
 import logging
-import warnings
-warnings.filterwarnings("ignore", category=UserWarning, append=True)
+from astropy import log
+log.setLevel("WARNING")
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ def aperture_photometry_on_file(x: float, y: float,
             zodi_img = hdul["ZODI"].data
             flux_img -= zodi_img
 
-            logger.info(f"Median of the zodiacal subtracted image"
+            logger.debug(f"Median of the zodiacal subtracted image"
                          f" is {np.nanmedian(flux_img):.3e}")
 
             aperture = CircularAperture([(x, y)], r=aperture_radius)
@@ -80,7 +80,7 @@ def perform_aperture_photometry_on_list(ra: float, dec: float,
                                         filelist: list,
                                         aperture_radius: float = APERTURE_RADIUS) -> pd.DataFrame:
     results = []
-    logger.info(f"Running aperture photometry for RA={ra}, Dec={dec} on {len(filelist)} files.")
+    logger.debug(f"Running aperture photometry for RA={ra}, Dec={dec} on {len(filelist)} files.")
     for filepath in filelist:
         try:
             x, y = get_image_coords_from_file(ra, dec, filepath)
@@ -94,7 +94,8 @@ def perform_aperture_photometry_on_list(ra: float, dec: float,
                 "flux_err_jy": flux_err_jy_val,
                 "flagged": is_masked
             })
-            logger.info(f"Processed {filepath}: λ={lam:.3f} µm, Flux={flux_jy_val:.3e} Jy {'(FLAGGED)' if is_masked else ''}")
+            logger.debug(f"Processed {filepath}: λ={lam:.3f} µm, "
+                         f"Flux={flux_jy_val:.3e} Jy {'(FLAGGED)' if is_masked else ''}")
         except ValueError as ve:
             logger.warning(f"Skipping {filepath}: {ve}")
         except Exception as e:
