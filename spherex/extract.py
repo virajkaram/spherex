@@ -42,6 +42,12 @@ def aperture_photometry_on_file(x: float, y: float,
             flux_img = hdul["IMAGE"].data
             var_img = hdul["VARIANCE"].data
             flags_img = hdul["FLAGS"].data
+            zodi_img = hdul["ZODI"].data
+            flux_img -= zodi_img
+
+            logger.debug(f"Median of the zodiacal subtracted image"
+                         f" is {np.median(flux_img):.3e}")
+
             aperture = CircularAperture([(x, y)], r=aperture_radius)
 
             # Evaluate mask across full image shape
