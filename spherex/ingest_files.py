@@ -1,5 +1,5 @@
 from sqlalchemy.exc import IntegrityError
-from spherex.tables import set_up_winter_databases
+from spherex.tables import set_up_spherex_databases
 from pathlib import Path
 import logging
 import numpy as np
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     if args.data_dir is None and args.parquet_file is None:
         parser.error("Either --data_dir or --parquet_file must be provided.")
     logger = get_logger()
-    set_up_winter_databases()
+    set_up_spherex_databases()
     data_dir = Path(args.data_dir) if args.data_dir else None
     parquet_file = Path(args.parquet_file) if args.parquet_file else None
     if parquet_file is not None:

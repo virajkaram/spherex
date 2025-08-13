@@ -38,7 +38,7 @@ def set_up_postgis(db_name: str, db_table: BaseTable):
         column_name=db_table.geom_column_name,
     )
 
-def set_up_winter_databases():
+def set_up_spherex_databases():
     """
     Setup the winter databases
 
