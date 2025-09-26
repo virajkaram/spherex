@@ -33,15 +33,17 @@ def setup_database(db_base: Union[DeclarativeBase, BaseTable]):
 
     try:
         pg_user.validate_credentials()
-    except OperationalError:
-        logger.warning(
+    except OperationalError as exc:
+        logger.error(
             f"Failed to validate credentials for user {DB_USER}. "
-            f"Will try creating new user with this name using admin credentials."
+            f"We no longer support creating user credentials, please make the user "
+            f"and grant permissions yourself"
         )
-        pg_admin = PostgresAdmin()
-        pg_admin.validate_credentials()
-        pg_admin.create_new_user(new_db_user=DB_USER, new_password=DB_PASSWORD)
-        pg_user.validate_credentials()
+        # raise exc
+        # pg_admin = PostgresAdmin()
+        # pg_admin.validate_credentials()
+        # pg_admin.create_new_user(new_db_user=DB_USER, new_password=DB_PASSWORD)
+        # pg_user.validate_credentials()
 
     pg_user.create_db(db_name=db_name)
 
