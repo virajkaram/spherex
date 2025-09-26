@@ -11,8 +11,8 @@
 source /mnt/home/vkarambelkar/.bashrc
 module load modules/2.3-20240529
 module load python/3.10.13
-module load openmpi4
-source /mnt/home/vkarambelkar/wtpfp/.venv/bin/activate
+module load openmpi python-mpi
+source /mnt/home/vkarambelkar/spherex/.venv/bin/activate
 
 ingest_spherex
 echo "Starting ingestion of images"

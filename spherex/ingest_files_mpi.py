@@ -1,4 +1,3 @@
-from astropy import time
 from sqlalchemy.exc import IntegrityError
 from spherex.tables import set_up_spherex_databases
 from pathlib import Path
