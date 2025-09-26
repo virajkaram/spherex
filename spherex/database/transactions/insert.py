@@ -10,6 +10,7 @@ from sqlalchemy import Insert, column
 
 from spherex.database.base_table import BaseTable
 from spherex.database.engine import get_engine
+import sqlalchemy
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +19,7 @@ def _insert_in_table(
     new_entry: dict,
     sql_table: Type[BaseTable],
     returning_keys: list[str] | str = None,
+    engine: sqlalchemy.engine.Engine = None,
 ) -> pd.DataFrame:
     """
     Export a list of fields in value dict to a database table
@@ -38,7 +40,8 @@ def _insert_in_table(
         .returning(*[column(x) for x in returning_keys])
     )
 
-    engine = get_engine(db_name=db_name)
+    if engine is None:
+        engine = get_engine(db_name=db_name)
 
     with engine.connect() as conn:
         res = conn.execute(stmt)

@@ -14,6 +14,7 @@ from tqdm import tqdm
 import argparse
 from mpi4py import MPI
 from time import time
+from spherex.database.engine import get_engine
 
 
 logger = logging.getLogger(__name__)
@@ -25,19 +26,19 @@ size = comm.Get_size()  # Total number of processes
 
 
 def insert_record_into_table(new_entry: dict, sql_table: Type[BaseTable],
-                             returning_keys=None):
+                             returning_keys=None, engine=None):
     """
     Insert a record into a given SQL table
     """
     try:
         _insert_in_table(new_entry=new_entry, sql_table=sql_table,
-                         returning_keys=returning_keys)
+                         returning_keys=returning_keys, engine=engine)
         logger.debug(f"Inserted record {new_entry} into table {sql_table.__tablename__}")
     except IntegrityError as e:
         logger.debug(f"Found duplicate entry for record: {new_entry}, skipping.")
 
 
-def ingest_single_file_into_table(file_path: Path, table: Type[BaseTable]):
+def ingest_single_file_into_table(file_path: Path, table: Type[BaseTable], engine=None):
     """
     Ingest a single file into a given SQL table
     """
@@ -48,7 +49,7 @@ def ingest_single_file_into_table(file_path: Path, table: Type[BaseTable]):
         logger.warning(f"Could not extract record from file {file_path}. Skipping.")
         return
     insert_record_into_table(new_entry=new_values, sql_table=table,
-                             returning_keys="uimageid")
+                             returning_keys="uimageid", engine=engine)
     logger.debug(f"Finished ingesting file {file_path} into table {table.__tablename__}")
 
 
@@ -60,6 +61,7 @@ def ingest_images_from_directory(dir_path: Path):
     e.g. dir_path = /base_path/2025W17_4B, code looks for all fits files in
     the lvl2b../<1>, <2> and so on subfolders.
     """
+    engine = get_engine(db_name=ImagesTable.db_name)
     logger.info(f"Ingesting images from directory: {dir_path}")
     file_list = np.sort(glob(str(dir_path / "*/*/*.fits")))
     file_list = [Path(f) for f in file_list]
@@ -68,8 +70,10 @@ def ingest_images_from_directory(dir_path: Path):
         if 'cutout' in file_path.name.lower():
             continue
         logger.debug(f"Processing file: {file_path}")
-        ingest_single_file_into_table(file_path, ImagesTable)
+        ingest_single_file_into_table(file_path, ImagesTable, engine=engine)
         logger.debug(f"Finished processing file: {file_path}")
+
+    engine.dispose()
 
 
 if __name__ == "__main__":
