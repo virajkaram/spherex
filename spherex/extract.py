@@ -41,7 +41,9 @@ def aperture_photometry_on_file(x: float, y: float,
                                 annulus_inner_radius: float = ANNULUS_R_IN,
                                 annulus_outer_radius: float = ANNULUS_R_OUT,
                                 ):
-    lam, dlam, flux_jy, flux_err_jy, is_masked = np.nan, np.nan, np.nan, np.nan, True
+    (lam, dlam, flux_jy, flux_err_jy, flux_bkgsub_jy,
+     flux_err_bkgsub_jy, is_masked) = (np.nan, np.nan, np.nan, np.nan, np.nan,
+                                       np.nan, True)
     try:
         with fits.open(filepath, memmap=False) as hdul:
             flux_img = hdul["IMAGE"].data
@@ -107,6 +109,7 @@ def aperture_photometry_on_file(x: float, y: float,
             flux_err_bkgsub_jy = flux_err_bkgsub * pix_area_sr * 1e6
 
     except Exception as e:
+        raise e
         logger.error(f"Failed on {filepath}: {e}")
 
     return lam, dlam, flux_jy, flux_err_jy, flux_bkgsub_jy, flux_err_bkgsub_jy, is_flagged
