@@ -61,10 +61,10 @@ def aperture_photometry_on_file(x: float, y: float,
 
             # Evaluate mask across full image shape
             mask = aperture.to_mask(method="center")[0]
-            aper_mask = mask.to_image(shape=flags_img.shape)
+            aper_mask = mask.to_image(shape=flags_img.shape).astype(bool)
             annulus_mask = annulus.to_mask(method="center")[0].to_image(shape=flags_img.shape).astype(bool)
 
-            aper_flags = flags_img[aper_mask.astype(bool)]
+            aper_flags = flags_img[aper_mask]
             is_flagged = np.any(aper_flags & BITMASK)
 
             is_flagged_src = np.any(flags_img[aper_mask] & BITMASK)
@@ -139,7 +139,6 @@ def perform_aperture_photometry_on_list(ra: float, dec: float,
         except ValueError as ve:
             logger.warning(f"Skipping {filepath}: {ve}")
         except Exception as e:
-            raise e
             logger.error(f"Error processing {filepath}: {e}")
     results_df = pd.DataFrame(results)
     return results_df
