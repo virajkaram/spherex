@@ -77,15 +77,15 @@ def aperture_photometry_on_file(x: float, y: float,
             flux = flux_tbl["aperture_sum"][0]
             flux_err = np.sqrt(var_tbl["aperture_sum"][0]) if flux > 0 else 0.0
 
-            # Background estimates
-            bkg_flux_tbl = aperture_photometry(flux_img, annulus)
+            # bkg_flux_tbl = aperture_photometry(flux_img, annulus)
             bkg_var_tbl = aperture_photometry(var_img, annulus)
-            bkg_flux_total = bkg_flux_tbl["aperture_sum"][0]
+            # bkg_flux_total = bkg_flux_tbl["aperture_sum"][0]
             bkg_var_total = bkg_var_tbl["aperture_sum"][0]
             bkg_area = float(annulus.area)
             bkg_median_perpix, bkg_var_perpix, n_bkg = 0.0, 0.0, 0.0
             if np.isfinite(bkg_area) and (bkg_area > 0):
-                bkg_median_perpix = bkg_flux_total / bkg_area
+                bkg_median_perpix = np.nanmedian(
+                    flux_img[annulus_mask])  # bkg_flux_total / bkg_area
                 bkg_var_perpix = bkg_var_total / bkg_area
                 n_bkg = bkg_area
 
@@ -125,7 +125,11 @@ def perform_aperture_photometry_on_list(ra: float, dec: float,
             (lam, dlam, flux_jy_val, flux_err_jy_val, flux_bkgsub_jy_val, flux_bkgsub_err_jy_val,
              is_masked) = aperture_photometry_on_file(x, y, filepath, aperture_radius=aperture_radius)
             results.append({
-                "file": filepath.name,
+                "x": x,
+                "y": y,
+                "ra": ra,
+                "dec": dec,
+                "file": filepath.as_posix(),
                 "wavelength_um": lam,
                 "bandwidth_um": dlam,
                 "flux_jy": flux_jy_val,
