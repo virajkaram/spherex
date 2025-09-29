@@ -109,7 +109,6 @@ def aperture_photometry_on_file(x: float, y: float,
             flux_err_bkgsub_jy = flux_err_bkgsub * pix_area_sr * 1e6
 
     except Exception as e:
-        raise e
         logger.error(f"Failed on {filepath}: {e}")
 
     return lam, dlam, flux_jy, flux_err_jy, flux_bkgsub_jy, flux_err_bkgsub_jy, is_flagged
@@ -140,6 +139,7 @@ def perform_aperture_photometry_on_list(ra: float, dec: float,
         except ValueError as ve:
             logger.warning(f"Skipping {filepath}: {ve}")
         except Exception as e:
+            raise e
             logger.error(f"Error processing {filepath}: {e}")
     results_df = pd.DataFrame(results)
     return results_df
