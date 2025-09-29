@@ -13,10 +13,16 @@ def plot_spectrum(photometry_df: pd.DataFrame, ra: float, dec: float,
     flagged = photometry_df[photometry_df["flagged"]]
 
     plt.errorbar(unflagged["wavelength_um"], unflagged["flux_jy"],
-                 yerr=unflagged["flux_err_jy"], fmt='.', capsize=3, label="Unflagged",
+                 yerr=unflagged["flux_err_jy"], fmt='.', capsize=3, label="No bkg sub",
                  color='black')
     plt.scatter(flagged["wavelength_um"], flagged["flux_jy"],
-                color='red', marker='x', s=40, label="Flagged")
+                color='red', marker='x', s=40, label="")
+
+    plt.errorbar(unflagged["wavelength_um"], unflagged["flux_bkgsub_jy"],
+                 yerr=unflagged["flux_bkgsub_err_jy"], fmt='.', capsize=3, label="Bkg sub",
+                 color='green')
+    plt.scatter(flagged["wavelength_um"], flagged["flux_bkgsub_jy"],
+                color='red', marker='x', s=40, label="")
 
     plt.yscale("log")
     plt.xlabel("Wavelength (µm)")

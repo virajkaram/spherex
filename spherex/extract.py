@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from astropy.io import fits
 from astropy.wcs import WCS
-from photutils.aperture import CircularAperture, aperture_photometry
+from photutils.aperture import CircularAperture, CircularAnnulus, aperture_photometry
 import logging
 from astropy import log
 log.setLevel("WARNING")
@@ -11,6 +11,8 @@ log.setLevel("WARNING")
 logger = logging.getLogger(__name__)
 
 APERTURE_RADIUS = 2  # pixels
+ANNULUS_R_IN = 2.0 * APERTURE_RADIUS
+ANNULUS_R_OUT = 3.0 * APERTURE_RADIUS
 
 # --- Bitmask for SPHEREx bad flags ---
 BITMASK = (
@@ -35,7 +37,9 @@ def get_image_coords_from_file(ra: float, dec: float, filepath: Path):
 
 def aperture_photometry_on_file(x: float, y: float,
                                 filepath: Path,
-                                aperture_radius: float = APERTURE_RADIUS
+                                aperture_radius: float = APERTURE_RADIUS,
+                                annulus_inner_radius: float = ANNULUS_R_IN,
+                                annulus_outer_radius: float = ANNULUS_R_OUT,
                                 ):
     lam, dlam, flux_jy, flux_err_jy, is_masked = np.nan, np.nan, np.nan, np.nan, True
     try:
@@ -50,18 +54,47 @@ def aperture_photometry_on_file(x: float, y: float,
                          f" is {np.nanmedian(flux_img):.3e}")
 
             aperture = CircularAperture([(x, y)], r=aperture_radius)
+            annulus = CircularAnnulus([(x, y)], r_in=annulus_inner_radius,
+                                      r_out=annulus_outer_radius)
 
             # Evaluate mask across full image shape
             mask = aperture.to_mask(method="center")[0]
             aper_mask = mask.to_image(shape=flags_img.shape)
+            annulus_mask = annulus.to_mask(method="center")[0].to_image(shape=flags_img.shape).astype(bool)
+
             aper_flags = flags_img[aper_mask.astype(bool)]
             is_flagged = np.any(aper_flags & BITMASK)
+
+            is_flagged_src = np.any(flags_img[aper_mask] & BITMASK)
+            is_flagged_bkg = np.any(flags_img[annulus_mask] & BITMASK)
+            is_flagged = bool(is_flagged_src or is_flagged_bkg)
 
             # Photometry
             flux_tbl = aperture_photometry(flux_img, aperture)
             var_tbl = aperture_photometry(var_img, aperture)
             flux = flux_tbl["aperture_sum"][0]
-            flux_err = np.sqrt(var_tbl["aperture_sum"][0])
+            flux_err = np.sqrt(var_tbl["aperture_sum"][0]) if flux > 0 else 0.0
+
+            # Background estimates
+            bkg_flux_tbl = aperture_photometry(flux_img, annulus)
+            bkg_var_tbl = aperture_photometry(var_img, annulus)
+            bkg_flux_total = bkg_flux_tbl["aperture_sum"][0]
+            bkg_var_total = bkg_var_tbl["aperture_sum"][0]
+            bkg_area = float(annulus.area)
+            bkg_median_perpix, bkg_var_perpix, n_bkg = 0.0, 0.0, 0.0
+            if np.isfinite(bkg_area) and (bkg_area > 0):
+                bkg_median_perpix = bkg_flux_total / bkg_area
+                bkg_var_perpix = bkg_var_total / bkg_area
+                n_bkg = bkg_area
+
+            aperture_area = float(aperture.area)
+            flux_total_bkgsub = flux - bkg_median_perpix * aperture_area
+            if bkg_area > 0:
+                var_bkg = (bkg_var_perpix * aperture_area**2) / n_bkg
+            else:
+                var_bkg = 0.0
+            flux_err_bkgsub = np.sqrt(flux_err**2 + var_bkg)
+            flux_err_bkgsub = max(0.0, flux_err_bkgsub)
 
             wave_wcs = WCS(hdul[1].header, hdul, key='W')
             lam, dlam = wave_wcs.wcs_pix2world(x, y, 0)
@@ -70,10 +103,13 @@ def aperture_photometry_on_file(x: float, y: float,
             pix_area_sr = (arcsec_per_pix / 3600 * np.pi / 180) ** 2
             flux_jy = flux * pix_area_sr * 1e6
             flux_err_jy = flux_err * pix_area_sr * 1e6
+            flux_bkgsub_jy = flux_total_bkgsub * pix_area_sr * 1e6
+            flux_err_bkgsub_jy = flux_err_bkgsub * pix_area_sr * 1e6
+
     except Exception as e:
         logger.error(f"Failed on {filepath}: {e}")
 
-    return lam, dlam, flux_jy, flux_err_jy, is_flagged
+    return lam, dlam, flux_jy, flux_err_jy, flux_bkgsub_jy, flux_err_bkgsub_jy, is_flagged
 
 
 def perform_aperture_photometry_on_list(ra: float, dec: float,
@@ -84,14 +120,16 @@ def perform_aperture_photometry_on_list(ra: float, dec: float,
     for filepath in filelist:
         try:
             x, y = get_image_coords_from_file(ra, dec, filepath)
-            lam, dlam, flux_jy_val, flux_err_jy_val, is_masked = aperture_photometry_on_file(x, y, filepath,
-                                                                                             aperture_radius=aperture_radius)
+            (lam, dlam, flux_jy_val, flux_err_jy_val, flux_bkgsub_jy_val, flux_bkgsub_err_jy_val,
+             is_masked) = aperture_photometry_on_file(x, y, filepath, aperture_radius=aperture_radius)
             results.append({
                 "file": filepath.name,
                 "wavelength_um": lam,
                 "bandwidth_um": dlam,
                 "flux_jy": flux_jy_val,
                 "flux_err_jy": flux_err_jy_val,
+                "flux_bkgsub_jy": flux_bkgsub_jy_val,
+                "flux_bkgsub_err_jy": flux_bkgsub_err_jy_val,
                 "flagged": is_masked
             })
             logger.debug(f"Processed {filepath}: λ={lam:.3f} µm, "
