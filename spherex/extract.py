@@ -6,6 +6,9 @@ from astropy.wcs import WCS
 from photutils.aperture import CircularAperture, CircularAnnulus, aperture_photometry
 import logging
 from astropy import log
+
+from spherex.utils import get_image_coords_from_file
+
 log.setLevel("WARNING")
 
 logger = logging.getLogger(__name__)
@@ -20,19 +23,6 @@ BITMASK = (
     (1 << 6)  | (1 << 7)  | (1 << 9)  |
     (1 << 10) | (1 << 11) | (1 << 15)
 )
-
-
-def get_image_coords_from_file(ra: float, dec: float, filepath: Path):
-    with fits.open(filepath, memmap=False) as hdulist:
-        header = hdulist[1].header
-        wcs = WCS(header)
-        x, y = wcs.world_to_pixel_values(ra, dec)
-        naxis1 = header.get("NAXIS1", 2048)
-        naxis2 = header.get("NAXIS2", 2048)
-        if 0 <= x < naxis1 and 0 <= y < naxis2:
-            return x, y
-        else:
-            raise ValueError("Coordinates are outside image bounds.")
 
 
 def aperture_photometry_on_file(x: float, y: float,
@@ -116,7 +106,8 @@ def aperture_photometry_on_file(x: float, y: float,
 
 def perform_aperture_photometry_on_list(ra: float, dec: float,
                                         filelist: list,
-                                        aperture_radius: float = APERTURE_RADIUS) -> pd.DataFrame:
+                                        aperture_radius: float = APERTURE_RADIUS,
+                                        ) -> pd.DataFrame:
     results = []
     logger.debug(f"Running aperture photometry for RA={ra}, Dec={dec} on {len(filelist)} files.")
     for filepath in filelist:
@@ -145,4 +136,5 @@ def perform_aperture_photometry_on_list(ra: float, dec: float,
         except Exception as e:
             logger.error(f"Error processing {filepath}: {e}")
     results_df = pd.DataFrame(results)
+    results_df = results_df.sort_values("wavelength_um").reset_index(drop=True)
     return results_df

@@ -1,5 +1,6 @@
 import pandas as pd
 from spherex.extract import perform_aperture_photometry_on_list, APERTURE_RADIUS
+from spherex.cutouts import make_cutout_plots_from_filelist
 from spherex.log import get_logger
 from spherex.retrieve_files import get_images_within_coordinates
 from spherex.plot import plot_spectrum
@@ -32,6 +33,7 @@ def extract_aperture_photometry(ra, dec,
                                 aperture_radius=APERTURE_RADIUS,
                                 name="source",
                                 output_dir: Path=get_timetagged_output_dir(BASE_OUTPUT_DIR),
+                                plot_cutouts: bool=False,
                                 ):
     """
     Main function to extract aperture photometry from images within a certain radius of given coordinates.
@@ -50,6 +52,14 @@ def extract_aperture_photometry(ra, dec,
                                   index=False)
         plot_spectrum(photometry_results, ra=ra, dec=dec,
                       output_plotname=f"{output_dir}/spectrum_{name}_ra{ra:.5f}_dec{dec:.5f}.pdf")
+
+        if plot_cutouts:
+            cutout_plotname = Path(output_dir) / f"cutouts_{name}_ra{ra:.5f}_dec{dec:.5f}.pdf"
+            if len(photometry_results) > 0:
+                output_plotname = cutout_plotname.as_posix()
+                make_cutout_plots_from_filelist(photometry_results['file'].to_list(), ra, dec,
+                                                output_plotname)
+                logger.info(f"Saved cutout plots to {output_plotname}")
         logger.debug("Aperture photometry completed.")
 
     else:
@@ -69,6 +79,7 @@ if __name__ == "__main__":
     parser.add_argument("--aperture_radius", type=float, default=3.0,
                         help="Aperture radius in pixels (default: 3.0)")
     parser.add_argument("--loglevel", type=str, default="INFO",)
+    parser.add_argument("--plot_cutouts", action="store_true",)
     args = parser.parse_args()
 
     logger = get_logger(level=args.loglevel)
@@ -88,14 +99,16 @@ if __name__ == "__main__":
             extract_aperture_photometry(ra=row['ra'], dec=row['dec'],
                                         aperture_radius=args.aperture_radius,
                                         name=row['name'],
-                                        output_dir=output_directory
+                                        output_dir=output_directory,
+                                        plot_cutouts=args.plot_cutouts
                                         )
 
     if (args.ra is not None) and (args.dec is not None):
         extract_aperture_photometry(ra=args.ra, dec=args.dec,
                                     aperture_radius=args.aperture_radius,
                                     name=args.name,
-                                    output_dir=output_directory
+                                    output_dir=output_directory,
+                                    plot_cutouts=args.plot_cutouts
                                     )
 
     logger.info(f"Output directory: {output_directory}")
