@@ -60,9 +60,10 @@ def extract_aperture_photometry(ra, dec,
                                                                  annulus_outer_radius=annulus_outer_radius,
                                                                  )
         photometry_filename = output_dir / f"spectrum_{name}_ra{ra:.5f}_dec{dec:.5f}.csv"
-        photometry_results.to_csv(photometry_filename,
+        if len(photometry_results) > 0:
+            photometry_results.to_csv(photometry_filename,
                                   index=False)
-        plot_spectrum(photometry_results, ra=ra, dec=dec,
+            plot_spectrum(photometry_results, ra=ra, dec=dec,
                       output_plotname=f"{output_dir}/spectrum_{name}_ra{ra:.5f}_dec{dec:.5f}.pdf")
 
         if plot_cutouts:

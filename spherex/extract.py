@@ -142,5 +142,6 @@ def perform_aperture_photometry_on_list(ra: float, dec: float,
         except Exception as e:
             logger.error(f"Error processing {filepath}: {e}")
     results_df = pd.DataFrame(results)
-    results_df = results_df.sort_values("wavelength_um").reset_index(drop=True)
+    if len(results_df) > 0:
+        results_df = results_df.sort_values("wavelength_um").reset_index(drop=True)
     return results_df
