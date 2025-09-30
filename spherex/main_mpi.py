@@ -112,8 +112,9 @@ if __name__ == "__main__":
 
     if args.filename is not None:
         source_data = pd.read_csv(args.filename)
-        assert set(["ra", "dec", "name"]) == set(list(source_data.columns)), \
-            "Input file must contain columns: ra, dec, name"
+        for col in ['ra', 'dec', 'name']:
+            if col not in source_data.columns:
+                raise ValueError(f"Input file must contain column: {col}")
 
         logger.info(f"Processing {len(source_data)} sources from {args.filename}")
 
