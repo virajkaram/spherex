@@ -1,5 +1,6 @@
 import pandas as pd
-from spherex.extract import perform_aperture_photometry_on_list, APERTURE_RADIUS
+from spherex.extract import (perform_aperture_photometry_on_list,
+                             APERTURE_RADIUS, ANNULUS_R_IN, ANNULUS_R_OUT)
 from spherex.cutouts import make_cutout_plots_from_filelist
 from spherex.log import get_logger
 from spherex.retrieve_files import get_images_within_coordinates
@@ -31,6 +32,8 @@ def get_timetagged_output_dir(base_output_dir: str | Path) -> Path:
 
 def extract_aperture_photometry(ra, dec,
                                 aperture_radius=APERTURE_RADIUS,
+                                annulus_inner_radius=ANNULUS_R_IN,
+                                annulus_outer_radius=ANNULUS_R_OUT,
                                 name="source",
                                 output_dir: Path=get_timetagged_output_dir(BASE_OUTPUT_DIR),
                                 plot_cutouts: bool=False,
@@ -47,7 +50,10 @@ def extract_aperture_photometry(ra, dec,
         photometry_results = perform_aperture_photometry_on_list(ra=ra,
                                                                  dec=dec,
                                                                  filelist=file_paths,
-                                                                 aperture_radius=aperture_radius)
+                                                                 aperture_radius=aperture_radius,
+                                                                 annulus_inner_radius=annulus_inner_radius,
+                                                                 annulus_outer_radius=annulus_outer_radius,
+                                                                 )
         photometry_results.to_csv(f"{output_dir}/spectrum_{name}_ra{ra:.5f}_dec{dec:.5f}.csv",
                                   index=False)
         plot_spectrum(photometry_results, ra=ra, dec=dec,
@@ -57,8 +63,16 @@ def extract_aperture_photometry(ra, dec,
             cutout_plotname = Path(output_dir) / f"cutouts_{name}_ra{ra:.5f}_dec{dec:.5f}.pdf"
             if len(photometry_results) > 0:
                 output_plotname = cutout_plotname.as_posix()
-                make_cutout_plots_from_filelist(photometry_results['file'].to_list(), ra, dec,
-                                                output_plotname)
+                text_strings = [f"{round(row['wavelength_um'], 3)} um" for
+                                idx, row in photometry_results.iterrows()]
+                make_cutout_plots_from_filelist(photometry_results['file'].to_list(),
+                                                ra, dec,
+                                                output_plotname,
+                                                title_text=text_strings,
+                                                aperture_radius=aperture_radius,
+                                                annulus_r_in=annulus_inner_radius,
+                                                annulus_r_out=annulus_outer_radius,                                                
+                                                )
                 logger.info(f"Saved cutout plots to {output_plotname}")
         logger.debug("Aperture photometry completed.")
 

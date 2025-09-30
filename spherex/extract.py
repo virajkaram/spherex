@@ -107,6 +107,8 @@ def aperture_photometry_on_file(x: float, y: float,
 def perform_aperture_photometry_on_list(ra: float, dec: float,
                                         filelist: list,
                                         aperture_radius: float = APERTURE_RADIUS,
+                                        annulus_inner_radius: float = ANNULUS_R_IN,
+                                        annulus_outer_radius: float = ANNULUS_R_OUT,
                                         ) -> pd.DataFrame:
     results = []
     logger.debug(f"Running aperture photometry for RA={ra}, Dec={dec} on {len(filelist)} files.")
@@ -114,7 +116,11 @@ def perform_aperture_photometry_on_list(ra: float, dec: float,
         try:
             x, y = get_image_coords_from_file(ra, dec, filepath)
             (lam, dlam, flux_jy_val, flux_err_jy_val, flux_bkgsub_jy_val, flux_bkgsub_err_jy_val,
-             is_masked) = aperture_photometry_on_file(x, y, filepath, aperture_radius=aperture_radius)
+             is_masked) = aperture_photometry_on_file(x, y, filepath,
+                                                      aperture_radius=aperture_radius,
+                                                      annulus_inner_radius=annulus_inner_radius,
+                                                      annulus_outer_radius=annulus_outer_radius,
+                                                      )
             results.append({
                 "x": x,
                 "y": y,

@@ -19,8 +19,9 @@ def make_cutout_plot_for_file(filename, ra=None, dec=None, x=None, y=None,
                               ax = None,
                               half_width=10,
                               annulus_r_in=None,
-                            annulus_r_out=None,
-                            aperture_radius = None,
+                              annulus_r_out=None,
+                              aperture_radius = None,
+                              title_text=None,
                               ):
     """
     Make a cutout plot from a FITS file at given RA, Dec coordinates.
@@ -65,6 +66,9 @@ def make_cutout_plot_for_file(filename, ra=None, dec=None, x=None, y=None,
         ax.set_ylabel("Y Pixel")
         plt.colorbar(im, ax=ax, label='Flux')
 
+        if title_text is not None:
+            ax.set_title(title_text, fontsize=10)
+
         # Overlay aperture and annulus
         if aperture_radius is not None:
             aperture = CircularAperture((x - x_min, y - y_min), r=aperture_radius)
@@ -84,7 +88,13 @@ def make_cutout_plot_for_file(filename, ra=None, dec=None, x=None, y=None,
         raise e
 
 
-def make_cutout_plots_from_filelist(filelist, ra, dec, output_plotname):
+def make_cutout_plots_from_filelist(filelist, ra, dec, output_plotname,
+                                    half_width=10,
+                                    annulus_r_in=None,
+                                    annulus_r_out=None,
+                                    aperture_radius = None,
+                                    title_text: str | list=None,
+                                    ):
     """
     Make a multi-page pdf with each page showing 4x4 cutout plots.
     :param filelist:
@@ -97,6 +107,13 @@ def make_cutout_plots_from_filelist(filelist, ra, dec, output_plotname):
     n_rows = 4
     n_cols = 4
 
+    if isinstance(title_text, str):
+        title_text = [title_text] * len(filelist)
+    elif title_text is None:
+        title_text = [""] * len(filelist)
+    elif isinstance(title_text, list):
+        if len(title_text) != len(filelist):
+            raise ValueError("Length of title_text list must match length of filelist.")
     with PdfPages(output_plotname) as pdf:
         for i in range(0, len(filelist), n_plots_per_page):
             fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 15))
@@ -109,7 +126,10 @@ def make_cutout_plots_from_filelist(filelist, ra, dec, output_plotname):
                     filename = filelist[i + j]
                     try:
                         x, y = get_image_coords_from_file(ra, dec, filename)
-                        make_cutout_plot_for_file(filename, x=x, y=y, ax=ax)
+                        make_cutout_plot_for_file(filename, x=x, y=y, ax=ax, half_width=half_width,
+                                                  annulus_r_in=annulus_r_in, annulus_r_out=annulus_r_out,
+                                                    aperture_radius=aperture_radius, title_text=title_text[i + j],
+                                                  )
                     except ValueError as e:
                         logger.warning(f"Skipping {filename}: {e}")
                     except Exception as e:
