@@ -12,9 +12,10 @@ source /mnt/home/vkarambelkar/.bashrc
 module load modules/2.3-20240529
 module load python/3.10.13
 module load openmpi python-mpi
+module load gcc/13.2.0
 source /mnt/home/vkarambelkar/spherex/.venv/bin/activate
 
-ingest_spherex
+spherex
 echo "Starting ingestion of images"
 mpirun -np $SLURM_NTASKS python spherex/ingest_files_mpi.py
 echo "Ingestion of images completed"

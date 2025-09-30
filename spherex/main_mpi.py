@@ -10,7 +10,12 @@ import logging
 import os
 from pathlib import Path
 from astropy.time import Time
-from tqdm import tqdm
+from mpi4py import MPI
+
+
+comm = MPI.COMM_WORLD # Initialize the MPI communicator
+rank = comm.Get_rank() # The rank of the current process
+size = comm.Get_size()  # Total number of processes
 
 logger = logging.getLogger(__name__)
 
@@ -85,10 +90,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Perform aperture photometry on "
                                                  "images within a certain radius "
                                                  "of given coordinates.")
-    parser.add_argument("--ra", type=float, help="Right Ascension in degrees")
-    parser.add_argument("--dec", type=float, help="Declination in degrees")
-    parser.add_argument("--name", type=str,
-                        help="Source name", default="source")
     parser.add_argument("--filename", type=str,
                         help="File name with multiple sources")
     parser.add_argument("--aperture_radius", type=float, default=3.0,
@@ -106,8 +107,8 @@ if __name__ == "__main__":
         output_directory = Path(BASE_OUTPUT_DIR) / args.output_dir_name
         output_directory.mkdir(parents=True, exist_ok=True)
 
-    if (args.filename is None) and ((args.ra is None) or (args.dec is None)):
-        parser.error("Either --filename or both --ra and --dec must be provided.")
+    if (args.filename is None):
+        parser.error("--filename must be provided.")
 
     if args.filename is not None:
         source_data = pd.read_csv(args.filename)
@@ -115,20 +116,19 @@ if __name__ == "__main__":
             "Input file must contain columns: ra, dec, name"
 
         logger.info(f"Processing {len(source_data)} sources from {args.filename}")
-        for idx, row in tqdm(source_data.iterrows(), total=len(source_data)):
-            extract_aperture_photometry(ra=row['ra'], dec=row['dec'],
-                                        aperture_radius=args.aperture_radius,
-                                        name=row['name'],
-                                        output_dir=output_directory,
-                                        plot_cutouts=args.plot_cutouts
-                                        )
 
-    if (args.ra is not None) and (args.dec is not None):
-        extract_aperture_photometry(ra=args.ra, dec=args.dec,
-                                    aperture_radius=args.aperture_radius,
-                                    name=args.name,
-                                    output_dir=output_directory,
-                                    plot_cutouts=args.plot_cutouts
-                                    )
+        tasks = [(row['ra'], row['dec'], args.aperture_radius, row['name'], output_directory, args.plot_cutouts)
+                 for idx, row in source_data.iterrows()]
+        for i, task in enumerate(tasks):
+            if i % size != rank:
+                continue
+            ra, dec, aperture_radius, name, output_dir, plot_cutouts = task
+            logger.info(f"Rank {rank} processing source: {name} (RA={ra}, Dec={dec})")
+            extract_aperture_photometry(ra=ra, dec=dec,
+                                        aperture_radius=aperture_radius,
+                                        name=name,
+                                        output_dir=output_dir,
+                                        plot_cutouts=plot_cutouts
+                                        )
 
     logger.info(f"Output directory: {output_directory}")
