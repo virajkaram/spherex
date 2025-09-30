@@ -17,5 +17,5 @@ source /mnt/home/vkarambelkar/spherex/.venv/bin/activate
 
 spherex
 echo "Starting extraction of spectra"
-mpirun -np $SLURM_NTASKS python spherex/main_mpi.py --filename irtf_20250906_targets.csv --output_dir_name irtf_20250906_targets
+mpirun -np $SLURM_NTASKS python /mnt/home/vkarambelkar/spherex/main_mpi.py --filename /mnt/home/irtf_20250906_targets.csv --output_dir_name irtf_20250906_targets
 echo "Ingestion of images completed"
