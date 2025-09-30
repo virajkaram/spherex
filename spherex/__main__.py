@@ -54,24 +54,25 @@ def extract_aperture_photometry(ra, dec,
                                                                  annulus_inner_radius=annulus_inner_radius,
                                                                  annulus_outer_radius=annulus_outer_radius,
                                                                  )
-        photometry_results.to_csv(f"{output_dir}/spectrum_{name}_ra{ra:.5f}_dec{dec:.5f}.csv",
+        photometry_filename = output_dir / f"spectrum_{name}_ra{ra:.5f}_dec{dec:.5f}.csv"
+        photometry_results.to_csv(photometry_filename,
                                   index=False)
         plot_spectrum(photometry_results, ra=ra, dec=dec,
                       output_plotname=f"{output_dir}/spectrum_{name}_ra{ra:.5f}_dec{dec:.5f}.pdf")
 
         if plot_cutouts:
             cutout_plotname = Path(output_dir) / f"cutouts_{name}_ra{ra:.5f}_dec{dec:.5f}.pdf"
+            photometry_results = pd.read_csv(photometry_filename)
             if len(photometry_results) > 0:
                 output_plotname = cutout_plotname.as_posix()
-                text_strings = [f"{round(row['wavelength_um'], 3)} um" for
-                                idx, row in photometry_results.iterrows()]
+                text_strings = [f"{round(row['wavelength_um'], 3)} um" for idx, row in photometry_results.iterrows()]
                 make_cutout_plots_from_filelist(photometry_results['file'].to_list(),
                                                 ra, dec,
                                                 output_plotname,
                                                 title_text=text_strings,
                                                 aperture_radius=aperture_radius,
                                                 annulus_r_in=annulus_inner_radius,
-                                                annulus_r_out=annulus_outer_radius,                                                
+                                                annulus_r_out=annulus_outer_radius,
                                                 )
                 logger.info(f"Saved cutout plots to {output_plotname}")
         logger.debug("Aperture photometry completed.")
