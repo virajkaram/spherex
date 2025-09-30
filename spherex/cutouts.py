@@ -61,7 +61,6 @@ def make_cutout_plot_for_file(filename, ra=None, dec=None, x=None, y=None,
                               stretch=AsinhStretch())
 
         im = ax.imshow(cutout_flux, origin='lower', cmap='Greys', norm=norm)
-        ax.set_title(f"Cutout at RA={ra:.5f}, Dec={dec:.5f}")
         ax.set_xlabel("X Pixel")
         ax.set_ylabel("Y Pixel")
         plt.colorbar(im, ax=ax, label='Flux')
