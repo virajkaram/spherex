@@ -17,5 +17,5 @@ source /mnt/home/vkarambelkar/spherex/.venv/bin/activate
 
 spherex
 echo "Starting extraction of spectra"
-mpirun -np $SLURM_NTASKS python /mnt/home/vkarambelkar/spherex/spherex/main_mpi.py --filename /mnt/home/vkarambelkar/spherex_targets/ztf_galactic_plane_sources.csv --output_dir_name ztf_galactic_plane_spectra --name_key 'id' --ra_key 'ra [deg]' --dec_key 'dec[deg]'
+mpirun -np $SLURM_NTASKS python /mnt/home/vkarambelkar/spherex/spherex/main_mpi.py --filename /mnt/home/vkarambelkar/spherex_targets/ztf_galactic_plane_sources.csv --output_dir_name ztf_galactic_plane_spectra --name_key 'id' --ra_key 'ra [deg]' --dec_key 'dec [deg]'
 echo "Ingestion of images completed"
