@@ -98,6 +98,9 @@ if __name__ == "__main__":
     parser.add_argument("--loglevel", type=str, default="INFO",)
     parser.add_argument("--plot_cutouts", action="store_true",)
     parser.add_argument("--output_dir_name", type=str, default=None)
+    parser.add_argument("--name_key", type=str, default="name",)
+    parser.add_argument("--ra_key", type=str, default="ra",)
+    parser.add_argument("--dec_key", type=str, default="dec",)
     args = parser.parse_args()
 
     logger = get_logger(level=args.loglevel)
@@ -113,7 +116,7 @@ if __name__ == "__main__":
 
     if args.filename is not None:
         source_data = pd.read_csv(args.filename)
-        for col in ['ra', 'dec', 'name']:
+        for col in [args.name_key, args.ra_key, args.dec_key]:
             if col not in source_data.columns:
                 raise ValueError(f"Input file must contain column: {col}")
 
