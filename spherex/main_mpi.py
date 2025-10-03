@@ -122,7 +122,7 @@ if __name__ == "__main__":
 
         logger.info(f"Processing {len(source_data)} sources from {args.filename}")
 
-        tasks = [(row['ra'], row['dec'], args.aperture_radius, row['name'], output_directory, args.plot_cutouts)
+        tasks = [(row[args.ra_key], row[args.dec_key], args.aperture_radius, row[args.name_key], output_directory, args.plot_cutouts)
                  for idx, row in source_data.iterrows()]
         for i, task in enumerate(tasks):
             if i % size != rank:
