@@ -25,6 +25,9 @@ def get_images_within_coordinates(ra: float, dec: float):
                                 db_constraints=constraints,
                                 output_columns=['savepath']
                                 )
+
+    # replace 'kde10' with '' in savepaths
+    results['savepath'] = results['savepath'].str.replace('kde10', '', regex=False)
     return results
 
 
