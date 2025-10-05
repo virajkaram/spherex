@@ -27,7 +27,7 @@ def get_images_within_coordinates(ra: float, dec: float):
                                 )
 
     # replace 'kde10' with '' in savepaths
-    results['savepath'] = results['savepath'].str.replace('kde10', '', regex=False)
+    results['savepath'] = results['savepath'].str.replace('/mnt/home/kde10/ceph/spherex', '/mnt/home/spherex/ceph/', regex=False)
     return results
 
 
