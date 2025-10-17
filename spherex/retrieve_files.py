@@ -21,13 +21,18 @@ def get_images_within_coordinates(ra: float, dec: float):
                                               dec=dec,
                                               footprint_column_name='footprint')
 
+    constraints.add_q3c_constraint(ra=ra,dec=dec,
+                                   crossmatch_radius_arcsec=6*3600.0,
+                                   )
+
     results = select_from_table(sql_table=ImagesTable,
                                 db_constraints=constraints,
                                 output_columns=['savepath']
                                 )
 
     # replace 'kde10' with '' in savepaths
-    results['savepath'] = results['savepath'].str.replace('/mnt/home/kde10/ceph/spherex', '/mnt/home/spherex/ceph/', regex=False)
+    results['savepath'] = results['savepath'].str.replace('/mnt/home/kde10/ceph/spherex',
+                                                          '/mnt/home/spherex/ceph/', regex=False)
     return results
 
 
