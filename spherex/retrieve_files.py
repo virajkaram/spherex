@@ -23,6 +23,8 @@ def get_images_within_coordinates(ra: float, dec: float):
 
     constraints.add_q3c_constraint(ra=ra,dec=dec,
                                    crossmatch_radius_arcsec=6*3600.0,
+                                   ra_field_name="crval1",
+                                   dec_field_name="crval2"
                                    )
 
     results = select_from_table(sql_table=ImagesTable,
