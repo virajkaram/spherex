@@ -17,15 +17,25 @@ def get_images_within_coordinates(ra: float, dec: float):
     :return: List of file paths
     """
     constraints = DBQueryConstraints()
-    constraints.add_postgis_within_constraint(ra=ra,
-                                              dec=dec,
-                                              footprint_column_name='footprint')
+    if ra>355.0 or ra<5.0:
+        # Only do q3c as postgis does not handle wrap around
+        constraints.add_q3c_constraint(ra=ra, dec=dec,
+                                       crossmatch_radius_arcsec=6 * 3600.0,
+                                       ra_field_name="crval1",
+                                       dec_field_name="crval2"
+                                       )
 
-    constraints.add_q3c_constraint(ra=ra,dec=dec,
-                                   crossmatch_radius_arcsec=6*3600.0,
-                                   ra_field_name="crval1",
-                                   dec_field_name="crval2"
-                                   )
+    else:
+        constraints.add_postgis_within_constraint(ra=ra,
+                                                  dec=dec,
+                                                  footprint_column_name='footprint')
+
+        # Need q3c to get rid of bad wrap-arounds
+        constraints.add_q3c_constraint(ra=ra,dec=dec,
+                                       crossmatch_radius_arcsec=6*3600.0,
+                                       ra_field_name="crval1",
+                                       dec_field_name="crval2"
+                                       )
 
     results = select_from_table(sql_table=ImagesTable,
                                 db_constraints=constraints,
