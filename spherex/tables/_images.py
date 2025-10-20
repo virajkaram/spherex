@@ -3,7 +3,6 @@ Models for the 'raw' table
 """
 from sqlalchemy import Column, Integer, Sequence, Float, VARCHAR
 from spherex.tables.base import SPHEREXBase
-from sqlalchemy.dialects.postgresql import ARRAY
 from geoalchemy2 import Geometry
 
 
