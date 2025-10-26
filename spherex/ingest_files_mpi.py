@@ -80,10 +80,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Ingest FITS files into the WINTER database.")
     parser.add_argument("--data_dir", type=str,
                         required=False,
-                        default="/mnt/home/kde10/ceph/spherex/spherex_data/level2",
+                        default="/mnt/home/spherex/ceph/spherex_data_qr2/level2",
                         help="Directory containing FITS files to ingest.")
     parser.add_argument("--completed_logfile", type=str, required=False,
-                        default="completed_weeks.txt",)
+                        default="completed_weeks_qr2.txt",)
     args = parser.parse_args()
 
     if args.data_dir is None and args.parquet_file is None:
