@@ -10,6 +10,7 @@ from spherex.cutouts import make_cutout_plots_from_filelist
 from spherex.retrieve_files import get_images_within_coordinates
 from spherex.plot import plot_spectrum
 from spherex.utils import get_timetagged_output_dir, BASE_OUTPUT_DIR
+from spherex.tables import LATEST_QR_VERSION
 
 
 from spherex.utils import get_image_coords_from_file
@@ -159,11 +160,13 @@ def extract_aperture_photometry(ra, dec,
                                 name="source",
                                 output_dir: Path=get_timetagged_output_dir(BASE_OUTPUT_DIR),
                                 plot_cutouts: bool=False,
+                                qr_version: int = LATEST_QR_VERSION,
                                 ):
     """
     Main function to extract aperture photometry from images within a certain radius of given coordinates.
     """
-    xmatch_filenames_df = get_images_within_coordinates(ra=ra, dec=dec)
+    xmatch_filenames_df = get_images_within_coordinates(ra=ra, dec=dec,
+                                                        qr_version=qr_version)
     logger.debug(f"Found {len(xmatch_filenames_df)} files.")
 
     if len(xmatch_filenames_df) > 0:

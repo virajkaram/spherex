@@ -1,5 +1,6 @@
 import pandas as pd
 from spherex.extract import extract_aperture_photometry, APERTURE_RADIUS
+from spherex.tables import LATEST_QR_VERSION
 from spherex.log import get_logger
 from spherex.utils import get_timetagged_output_dir, BASE_OUTPUT_DIR
 import argparse
@@ -28,6 +29,8 @@ if __name__ == "__main__":
     parser.add_argument("--name_key", type=str, default="name",)
     parser.add_argument("--ra_key", type=str, default="ra",)
     parser.add_argument("--dec_key", type=str, default="dec",)
+    parser.add_argument("--qr_version", type=int,
+                        default=LATEST_QR_VERSION)
     args = parser.parse_args()
 
     logger = get_logger(level=args.loglevel)
@@ -53,7 +56,8 @@ if __name__ == "__main__":
                                         aperture_radius=args.aperture_radius,
                                         name=row['name'],
                                         output_dir=output_directory,
-                                        plot_cutouts=args.plot_cutouts
+                                        plot_cutouts=args.plot_cutouts,
+                                        qr_version=args.qr_version,
                                         )
 
     if (args.ra is not None) and (args.dec is not None):
@@ -61,7 +65,8 @@ if __name__ == "__main__":
                                     aperture_radius=args.aperture_radius,
                                     name=args.name,
                                     output_dir=output_directory,
-                                    plot_cutouts=args.plot_cutouts
+                                    plot_cutouts=args.plot_cutouts,
+                                    qr_version=args.qr_version,
                                     )
 
     logger.info(f"Output directory: {output_directory}")
