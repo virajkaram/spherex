@@ -91,7 +91,7 @@ def write_records_for_directory(dir_path: str | Path, out_path: str | Path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parse FITS headers in parallel with MPI.")
-    parser.add_argument("--input_dir", type=str, required=True,
+    parser.add_argument("--input_dir", type=str,
                         help="Directory containing FITS files.",
                         default="/mnt/home/spherex/ceph/spherex_data_qr2/level2/")
     parser.add_argument("--output_file", type=str, default="spherex_records_qr2.parquet",
