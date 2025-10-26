@@ -6,6 +6,7 @@ from glob import glob
 import logging
 import argparse
 from tqdm import tqdm
+from spherex.tables._images import LATEST_QR_VERSION
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,7 @@ def get_record_from_file(file_path: str | Path):
         "footprint": footprint_polygon,
         "mjdobs": image_hdulist[1].header.get('MJD-OBS'),
         "detector": image_hdulist[1].header.get('DETECTOR'),
+        "qr_version": LATEST_QR_VERSION,
     }
     image_hdulist.close()
     return new_values

@@ -1,6 +1,6 @@
 import argparse
 import logging
-from spherex.tables import ImagesTable
+from spherex.tables import ImagesTable, LATEST_QR_VERSION
 from spherex.database.transactions import select_from_table
 from spherex.database.constraints import DBQueryConstraints
 from spherex.log import get_logger
@@ -8,12 +8,16 @@ from spherex.log import get_logger
 
 logger = logging.getLogger(__name__)
 
-def get_images_within_coordinates(ra: float, dec: float):
+def get_images_within_coordinates(ra: float,
+                                  dec: float,
+                                  qr_version: int = LATEST_QR_VERSION,
+                                  ):
     """
     Retrieve files within a certain radius of given coordinates from the database.
 
     :param ra: Right Ascension in degrees
     :param dec: Declination in degrees
+    :param qr_version: QR version to filter on
     :return: List of file paths
     """
     constraints = DBQueryConstraints()
@@ -36,6 +40,8 @@ def get_images_within_coordinates(ra: float, dec: float):
                                        ra_field_name="crval1",
                                        dec_field_name="crval2"
                                        )
+
+    constraints.add_constraint('qr_version', qr_version)
 
     results = select_from_table(sql_table=ImagesTable,
                                 db_constraints=constraints,

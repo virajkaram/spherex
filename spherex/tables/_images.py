@@ -6,6 +6,8 @@ from spherex.tables.base import SPHEREXBase
 from geoalchemy2 import Geometry
 
 
+LATEST_QR_VERSION = 2
+
 class ImagesTable(SPHEREXBase):  # pylint: disable=too-few-public-methods
     """
     Raw table in database
@@ -27,6 +29,7 @@ class ImagesTable(SPHEREXBase):  # pylint: disable=too-few-public-methods
     footprint = Column(Geometry("POLYGON", srid=4326), nullable=False)
     mjdobs = Column(Float, nullable=False)
     detector = Column(Integer, nullable=False)
+    qr_version = Column(Integer, nullable=False)
 
     ra_column_name = "crval1"
     dec_column_name = "crval2"

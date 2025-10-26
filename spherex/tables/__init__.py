@@ -1,4 +1,4 @@
-from spherex.tables._images import ImagesTable
+from spherex.tables._images import ImagesTable, LATEST_QR_VERSION
 from spherex.tables.base import SPHEREXBase
 import logging
 from spherex.database.credentials import DB_USER
