@@ -70,7 +70,7 @@ def ingest_images_from_file(file_path: Path):
     """
     logger.info(f"Ingesting images from parquet file: {file_path}")
     df = pd.read_parquet(file_path)
-    for idx, row in tqdm(df.iterrows()):
+    for idx, row in tqdm(df.iterrows(), total=len(df)):
         new_values = row.to_dict()
         insert_record_into_table(new_entry=new_values, sql_table=ImagesTable,
                                  returning_keys="uimageid")
