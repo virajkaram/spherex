@@ -34,15 +34,16 @@ def get_record_from_file(file_path: str | Path):
 
     image_hdulist = fits.open(file_path)
     footprint_polygon = header_to_polygon_wkt(image_hdulist[1].header)
-    new_values = {
-        "savepath": file_path.as_posix(),
-        "crval1": image_hdulist[1].header['CRVAL1'],
-        "crval2": image_hdulist[1].header['CRVAL2'],
-        "footprint": footprint_polygon,
-        "mjdobs": image_hdulist[1].header.get('MJD-OBS'),
-        "detector": image_hdulist[1].header.get('DETECTOR'),
-        "qr_version": LATEST_QR_VERSION,
-    }
+    new_values = image_hdulist[1].header.to_dict()
+    # Replace - by _ in keys
+    for key in list(new_values.keys()):
+        if '-' in key:
+            new_key = key.replace('-', '_')
+            new_values[new_key] = new_values.pop(key)
+    new_values["footprint"] = footprint_polygon
+    new_values["savepath"] = file_path.as_posix()
+    new_values["qr_version"] = LATEST_QR_VERSION
+
     image_hdulist.close()
     return new_values
 
