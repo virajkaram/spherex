@@ -9,13 +9,13 @@ class ImagesTable(SPHEREXBase):
     Full image table preserving the exact order of WCS header keywords.
     """
 
-    __tablename__ = "images_full"
+    __tablename__ = "images"
     __table_args__ = {"extend_existing": True}
 
     # --- Primary key ---
     uimageid = Column(
         Integer,
-        Sequence(start=1, name="images_full_uimageid_seq"),
+        Sequence(start=1, name="images_uimageid_seq"),
         autoincrement=True,
         primary_key=True,
     )
