@@ -41,10 +41,10 @@ def create_q3c_extension(
 
     logger.info(f"Creating q3c extension and index on table {table_name}...")
     trig_ddl = DDL(
-        f"""CREATE INDEX ON {table_name} """
-        f""""(q3c_ang2ipix("{ra_column_name}", "{dec_column_name}"));"""
-        f"""CLUSTER {table_name} USING {table_name}_q3c_ang2ipix_idx;"""
-        f"""ANALYZE {table_name};"""
+        f"CREATE INDEX ON {table_name} "
+        f"(q3c_ang2ipix({ra_column_name}, {dec_column_name}));"
+        f"CLUSTER {table_name} USING {table_name}_q3c_ang2ipix_idx;"
+        f"ANALYZE {table_name};"
     )
 
     with engine.connect() as conn:
