@@ -3,7 +3,8 @@ from geoalchemy2 import Geometry
 from spherex.tables.base import SPHEREXBase
 
 
-class ImagesFullTable(SPHEREXBase):
+LATEST_QR_VERSION = 2
+class ImagesTable(SPHEREXBase):
     """
     Full image table preserving the exact order of WCS header keywords.
     """
