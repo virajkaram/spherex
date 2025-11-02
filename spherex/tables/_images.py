@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, Float, String, Boolean, Sequence, VARCHAR
 from geoalchemy2 import Geometry
-from spherex.tables._base import SPHEREXBase
+from spherex.tables.base import SPHEREXBase
 
 
 class ImagesFullTable(SPHEREXBase):
