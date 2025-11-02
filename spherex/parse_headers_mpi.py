@@ -22,20 +22,25 @@ def header_to_polygon_wkt(header: fits.Header) -> str:
     return f"POLYGON(({coords_str}))"
 
 
-def get_record_from_file(file_path: Path) -> dict:
-    """Extract relevant header information from a FITS file."""
+def get_record_from_file(file_path: str | Path):
+    """
+    Extract relevant header information from a FITS file to create a record.
+    :param file_path:
+    :return:
+    """
+
     image_hdulist = fits.open(file_path)
-    header = image_hdulist[1].header
-    footprint_polygon = header_to_polygon_wkt(header)
-    new_values = {
-        "savepath": file_path.as_posix(),
-        "crval1": header["CRVAL1"],
-        "crval2": header["CRVAL2"],
-        "footprint": footprint_polygon,
-        "mjdobs": header.get("MJD-OBS"),
-        "detector": header.get("DETECTOR"),
-        "qr_version": LATEST_QR_VERSION,
-    }
+    footprint_polygon = header_to_polygon_wkt(image_hdulist[1].header)
+    new_values = image_hdulist[1].header.to_dict()
+    # Replace - by _ in keys
+    for key in list(new_values.keys()):
+        if '-' in key:
+            new_key = key.replace('-', '_')
+            new_values[new_key] = new_values.pop(key)
+    new_values["footprint"] = footprint_polygon
+    new_values["savepath"] = file_path.as_posix()
+    new_values["qr_version"] = LATEST_QR_VERSION
+
     image_hdulist.close()
     return new_values
 
