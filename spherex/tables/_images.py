@@ -198,8 +198,6 @@ class ImagesTable(SPHEREXBase):
     ps2_1w = Column(String(32))
     ps1_2w = Column(String(32))
     ps2_2w = Column(String(32))
-    comment = Column(String(255))
-    history = Column(String(255))
 
     # --- Geometry + bookkeeping fields ---
     footprint = Column(Geometry("POLYGON", srid=4326), nullable=False)

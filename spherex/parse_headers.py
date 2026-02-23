@@ -34,7 +34,9 @@ def get_record_from_file(file_path: str | Path):
 
     image_hdulist = fits.open(file_path)
     footprint_polygon = header_to_polygon_wkt(image_hdulist[1].header)
-    new_values = image_hdulist[1].header.to_dict()
+    new_values = dict(image_hdulist[1].header)
+    new_values.pop('COMMENT', None)  # Remove COMMENT if it exists
+    new_values.pop('HISTORY', None)  # Remove HISTORY if it exists
     # Replace - by _ in keys
     for key in list(new_values.keys()):
         if '-' in key:
