@@ -39,9 +39,10 @@ def get_record_from_file(file_path: str | Path):
     new_values.pop('HISTORY', None)  # Remove HISTORY if it exists
     # Replace - by _ in keys
     for key in list(new_values.keys()):
+        new_key = key
         if '-' in key:
             new_key = key.replace('-', '_')
-            new_values[new_key] = new_values.pop(key)
+        new_values[new_key.lower()] = new_values.pop(key)
     new_values["footprint"] = footprint_polygon
     new_values["savepath"] = file_path.as_posix()
     new_values["qr_version"] = LATEST_QR_VERSION

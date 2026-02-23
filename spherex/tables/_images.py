@@ -21,6 +21,11 @@ class ImagesTable(SPHEREXBase):
     )
 
     # --- Header fields in exact order ---
+    # --- FITS structural keywords ---
+    bitpix = Column(Integer)
+    extname = Column(String(64))
+    exttype = Column(String(64))
+    xtension = Column(String(32))
     naxis = Column(Integer)
     naxis1 = Column(Integer)
     naxis2 = Column(Integer)
@@ -68,6 +73,33 @@ class ImagesTable(SPHEREXBase):
     sps_epa = Column(Float)
     l1dqaflg = Column(String(16))
     radesys = Column(String(16))
+    # --- Coordinate system identifiers ---
+    xyz_sc_system = Column(String(32))
+    vxyz_sc_system = Column(String(32))
+    # --- Spacecraft position (center) ---
+    x_sc = Column(Float)
+    y_sc = Column(Float)
+    z_sc = Column(Float)
+    # --- Spacecraft position (start of exposure) ---
+    x_sc_start = Column(Float)
+    y_sc_start = Column(Float)
+    z_sc_start = Column(Float)
+    # --- Spacecraft position (end of exposure) ---
+    x_sc_end = Column(Float)
+    y_sc_end = Column(Float)
+    z_sc_end = Column(Float)
+    # --- Spacecraft velocity (center) ---
+    vx_sc = Column(Float)
+    vy_sc = Column(Float)
+    vz_sc = Column(Float)
+    # --- Spacecraft velocity (start of exposure) ---
+    vx_sc_start = Column(Float)
+    vy_sc_start = Column(Float)
+    vz_sc_start = Column(Float)
+    # --- Spacecraft velocity (end of exposure) ---
+    vx_sc_end = Column(Float)
+    vy_sc_end = Column(Float)
+    vz_sc_end = Column(Float)
     l2_n_nonlinear = Column(Integer)
     psthresh = Column(Float)
     l2_n_persist = Column(Integer)
