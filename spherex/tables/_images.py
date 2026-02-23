@@ -139,6 +139,7 @@ class ImagesTable(SPHEREXBase):
     l2_n_missing = Column(Integer)
     l2_n_fullsample = Column(Integer)
     l2_n_phanmiss = Column(Integer)
+    bunit = Column(String(32))
     a_order = Column(Integer)
     a_0_0 = Column(Float)
     a_0_1 = Column(Float)
