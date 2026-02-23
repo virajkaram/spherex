@@ -42,6 +42,8 @@ def get_record_from_file(file_path: str | Path):
         new_key = key
         if '-' in key:
             new_key = key.replace('-', '_')
+        if ' ' in new_key:
+            new_key = new_key.replace(' ', '_')
         new_values[new_key.lower()] = new_values.pop(key)
     new_values["footprint"] = footprint_polygon
     new_values["savepath"] = file_path.as_posix()
