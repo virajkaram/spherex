@@ -15,7 +15,7 @@ module load openmpi python-mpi
 module load gcc/13.2.0
 source /mnt/home/vkarambelkar/spherex/.venv/bin/activate
 
-spherex
+spherex_columbia
 echo "Starting ingestion of images"
 mpirun -np $SLURM_NTASKS python spherex/ingest_files_mpi.py
 echo "Ingestion of images completed"
