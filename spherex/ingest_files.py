@@ -82,16 +82,19 @@ if __name__ == "__main__":
                         help="Directory containing FITS files to ingest.")
     parser.add_argument("--parquet_file", type=str, required=False,
                         help="Parquet file containing records to ingest.")
+    parser.add_argument("--setup_only", action="store_true",)
     args = parser.parse_args()
     if args.data_dir is None and args.parquet_file is None:
         parser.error("Either --data_dir or --parquet_file must be provided.")
     logger = get_logger()
     set_up_spherex_databases()
-    data_dir = Path(args.data_dir) if args.data_dir else None
-    parquet_file = Path(args.parquet_file) if args.parquet_file else None
-    if parquet_file is not None:
-        ingest_images_from_file(parquet_file)
-    if data_dir is not None:
-        ingest_images_from_directory(data_dir)
 
-    logger.info("Finished ingesting data into the database.")
+    if not args.setup_only:
+        data_dir = Path(args.data_dir) if args.data_dir else None
+        parquet_file = Path(args.parquet_file) if args.parquet_file else None
+        if parquet_file is not None:
+            ingest_images_from_file(parquet_file)
+        if data_dir is not None:
+            ingest_images_from_directory(data_dir)
+
+        logger.info("Finished ingesting data into the database.")
