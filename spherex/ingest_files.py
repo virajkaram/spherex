@@ -52,7 +52,7 @@ def ingest_images_from_directory(dir_path: Path):
     Ingest data into the winter databases
     """
     logger.info(f"Ingesting images from directory: {dir_path}")
-    file_list = np.sort(glob(str(dir_path / "*/*/*/*.fits")))
+    file_list = np.sort(glob(str(dir_path / "*.fits")))
     file_list = [Path(f) for f in file_list]
     for file_path in tqdm(file_list):
         if 'cutout' in file_path.name.lower():
