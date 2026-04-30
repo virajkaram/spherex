@@ -37,6 +37,11 @@ def get_record_from_file(file_path: str | Path):
     new_values = dict(image_hdulist[1].header)
     new_values.pop('COMMENT', None)  # Remove COMMENT if it exists
     new_values.pop('HISTORY', None)  # Remove HISTORY if it exists
+
+    # pop l2_n_ghost, l2_n_ghost_fpa, l2_n_snow_ns, refcat.version, astronetsolved, qs_nmatch_var, match_nstars, daxis, nhalopix, contrast, l2_n_tran_nb, nblmpix, l2_n_ghost_ext, l2_n_pers_nb, l2_n_bloom_ns, nsnowpix, maxblmlp
+    for key in ['l2_n_ghost', 'l2_n_ghost_fpa', 'l2_n_snow_ns', 'refcat.version', 'astronetsolved', 'qs_nmatch_var', 'match_nstars', 'daxis', 'nhalopix', 'contrast', 'l2_n_tran_nb', 'nblmpix', 'l2_n_ghost_ext', 'l2_n_pers_nb', 'l2_n_bloom_ns', 'nsnowpix', 'maxblmlp']:
+        new_values.pop(key, None)
+        
     # Replace - by _ in keys
     for key in list(new_values.keys()):
         new_key = key
