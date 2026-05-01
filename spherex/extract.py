@@ -107,7 +107,7 @@ def aperture_photometry_on_file(x: float, y: float,
     except Exception as e:
         logger.error(f"Failed on {filepath}: {e}")
 
-    return lam, dlam, flux_jy, flux_err_jy, flux_bkgsub_jy, flux_err_bkgsub_jy, is_flagged
+    return lam, dlam, flux_jy, flux_err_jy, flux_bkgsub_jy, flux_err_bkgsub_jy, is_flagged, hdul[1].header['MJD-OBS']
 
 
 def perform_aperture_photometry_on_list(ra: float, dec: float,
@@ -122,7 +122,7 @@ def perform_aperture_photometry_on_list(ra: float, dec: float,
         try:
             x, y = get_image_coords_from_file(ra, dec, filepath)
             (lam, dlam, flux_jy_val, flux_err_jy_val, flux_bkgsub_jy_val, flux_bkgsub_err_jy_val,
-             is_masked) = aperture_photometry_on_file(x, y, filepath,
+             is_masked, mjd) = aperture_photometry_on_file(x, y, filepath,
                                                       aperture_radius=aperture_radius,
                                                       annulus_inner_radius=annulus_inner_radius,
                                                       annulus_outer_radius=annulus_outer_radius,
@@ -139,7 +139,8 @@ def perform_aperture_photometry_on_list(ra: float, dec: float,
                 "flux_err_jy": flux_err_jy_val,
                 "flux_bkgsub_jy": flux_bkgsub_jy_val,
                 "flux_bkgsub_err_jy": flux_bkgsub_err_jy_val,
-                "flagged": is_masked
+                "flagged": is_masked,
+                "mjd": mjd,
             })
             logger.debug(f"Processed {filepath}: λ={lam:.3f} µm, "
                          f"Flux={flux_jy_val:.3e} Jy {'(FLAGGED)' if is_masked else ''}")
