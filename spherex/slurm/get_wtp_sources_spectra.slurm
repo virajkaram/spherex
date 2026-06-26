@@ -15,7 +15,7 @@ module load openmpi python-mpi
 module load gcc/13.2.0
 source /mnt/home/vkarambelkar/spherex/.venv/bin/activate
 
-spherex
+spherex_columbia
 echo "Starting extraction of spectra"
 mpirun -np $SLURM_NTASKS python /mnt/home/vkarambelkar/spherex/spherex/main_mpi.py --filename /mnt/home/vkarambelkar/spherex_targets/neowise_fritz_sources_20260626.csv --output_dir_name neowise_fritz_sources_20260626
 echo "Ingestion of images completed"
