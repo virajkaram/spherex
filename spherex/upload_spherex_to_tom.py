@@ -91,7 +91,7 @@ def main():
 
     print(f'Found {len(files)} file(s)')
     errors = []
-    for filepath in files[:1]:
+    for filepath in files:
         try:
             process_file(filepath, session)
         except Exception as e:
