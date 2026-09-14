@@ -4,8 +4,8 @@
 #SBATCH --error=logs/extract_spherex_spectra_quasars_%j.err
 #SBATCH --time=120:00:00
 #SBATCH --cpus-per-task=1
-#SBATCH --nodes=5
-#SBATCH --ntasks-per-node=6
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
 #SBATCH --partition=cca
 
 source /mnt/home/vkarambelkar/.bashrc
