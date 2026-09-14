@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --job-name=extract_spherex_spectra_ztf_galactic_plane_sources
-#SBATCH --output=logs/extract_spherex_spectra_ztf_galactic_plane_sources_%j.out
-#SBATCH --error=logs/extract_spherex_spectra_ztf_galactic_plane_sources_%j.err
+#SBATCH --job-name=extract_spherex_spectra_quasars
+#SBATCH --output=logs/extract_spherex_spectra_quasars_%j.out
+#SBATCH --error=logs/extract_spherex_spectra_quasars_%j.err
 #SBATCH --time=120:00:00
 #SBATCH --cpus-per-task=1
-#SBATCH --nodes=10
+#SBATCH --nodes=5
 #SBATCH --ntasks-per-node=6
 #SBATCH --partition=cca
 
