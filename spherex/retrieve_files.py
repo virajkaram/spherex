@@ -51,6 +51,7 @@ def get_images_within_coordinates(ra: float,
     # replace 'kde10' with '' in savepaths
     results['savepath'] = results['savepath'].str.replace('/mnt/home/kde10/ceph/spherex',
                                                           '/mnt/home/spherex/ceph/', regex=False)
+    print(f"Found {len(results)} files containing RA={ra}, Dec={dec}.")
     return results
 
 
