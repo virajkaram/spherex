@@ -26,6 +26,7 @@ def run_select(
 
     engine = get_engine(db_name=sql_table.db_name)
 
+    print(f"Running query: {query}")
     with engine.connect() as conn:
         res = pd.read_sql(query, conn, columns=columns)
 
