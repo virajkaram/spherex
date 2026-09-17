@@ -148,6 +148,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate cutout plots from FITS files.")
     parser.add_argument("--ra", type=float, required=True, help="Right Ascension in degrees.")
     parser.add_argument("--dec", type=float, required=True, help="Declination in degrees.")
+    parser.add_argument("--half_width", type=int, default=10, help="Half width of the cutout in pixels.")
     parser.add_argument("--output", type=str, default="cutout_plots.pdf",
                         help="Output PDF file for cutout plots.")
     args = parser.parse_args()
@@ -155,4 +156,4 @@ if __name__ == "__main__":
     xmatch_filenames_df = get_images_within_coordinates(ra=args.ra, dec=args.dec)
     file_paths = [Path(x) for x in xmatch_filenames_df['savepath'].tolist()]
     logger.info(f"Making cutout plots from {len(file_paths)} files.")
-    make_cutout_plots_from_filelist(file_paths, args.ra, args.dec, args.output)
+    make_cutout_plots_from_filelist(file_paths, args.ra, args.dec, args.output, half_width=args.half_width)
