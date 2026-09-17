@@ -24,7 +24,11 @@ def plot_spectrum(photometry_df: pd.DataFrame, ra: float, dec: float,
     plt.scatter(flagged["wavelength_um"], flagged["flux_bkgsub_jy"],
                 color='red', marker='x', s=40, label="")
 
-    plt.yscale("log")
+    try:
+        plt.yscale("log")
+    except:
+        logger.warning("Failed to set y-axis to log scale.")
+
     plt.xlabel("Wavelength (µm)")
     plt.ylabel("Flux (Jy)")
     plt.title(f"SPHEREx Spectrum at RA={ra:.6f}, Dec={dec:.6f}")
