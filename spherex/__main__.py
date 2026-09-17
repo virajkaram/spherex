@@ -1,5 +1,5 @@
 import pandas as pd
-from spherex.extract import extract_aperture_photometry, APERTURE_RADIUS
+from spherex.extract import extract_aperture_photometry, APERTURE_RADIUS, ANNULUS_R_IN, ANNULUS_R_OUT
 from spherex.tables import LATEST_QR_VERSION
 from spherex.log import get_logger
 from spherex.utils import get_timetagged_output_dir, BASE_OUTPUT_DIR
@@ -22,7 +22,11 @@ if __name__ == "__main__":
                         help="File name with multiple sources")
     parser.add_argument("--aperture_radius", type=float,
                         default=APERTURE_RADIUS,
-                        help="Aperture radius in pixels (default: 3.0)")
+                        help="Aperture radius in pixels (default: 2.0)")
+    parser.add_argument("--annulus_r_in", type=float, default=ANNULUS_R_IN,
+                        help="Inner radius of the annulus in pixels (default: 4.0)")
+    parser.add_argument("--annulus_r_out", type=float, default=ANNULUS_R_OUT,
+                        help="Outer radius of the annulus in pixels (default: 6.0)")
     parser.add_argument("--loglevel", type=str, default="INFO",)
     parser.add_argument("--plot_cutouts", action="store_true",)
     parser.add_argument("--output_dir_name", type=str, default=None)
@@ -67,6 +71,8 @@ if __name__ == "__main__":
                                     output_dir=output_directory,
                                     plot_cutouts=args.plot_cutouts,
                                     qr_version=args.qr_version,
+                                    annulus_r_in=args.annulus_r_in,
+                                    annulus_r_out=args.annulus_r_out,
                                     )
 
     logger.info(f"Output directory: {output_directory}")
