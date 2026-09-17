@@ -24,10 +24,11 @@ def plot_spectrum(photometry_df: pd.DataFrame, ra: float, dec: float,
     plt.scatter(flagged["wavelength_um"], flagged["flux_bkgsub_jy"],
                 color='red', marker='x', s=40, label="")
 
-    try:
+    plotted_flux = pd.concat([photometry_df["flux_jy"], photometry_df["flux_bkgsub_jy"]])
+    if (plotted_flux > 0).any():
         plt.yscale("log")
-    except:
-        logger.warning("Failed to set y-axis to log scale.")
+    else:
+        logger.warning("No positive flux values to plot; using a linear y-axis instead of log.")
 
     plt.xlabel("Wavelength (µm)")
     plt.ylabel("Flux (Jy)")
