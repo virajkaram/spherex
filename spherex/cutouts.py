@@ -213,10 +213,18 @@ if __name__ == "__main__":
                         help="Normalize the display range to +/- n_sigma about the sigma-clipped median.")
     parser.add_argument("--output", type=str, default="cutout_plots.pdf",
                         help="Output PDF file for cutout plots.")
+    parser.add_argument("--annulus_r_in", type=float, default=None,
+                        help="Inner radius of the annulus in pixels.")
+    parser.add_argument("--annulus_r_out", type=float, default=None,
+                        help="Outer radius of the annulus in pixels.")
+    parser.add_argument("--aperture_radius", type=float, default=None,
+                        help="Radius of the aperture in pixels.")
     args = parser.parse_args()
 
     xmatch_filenames_df = get_images_within_coordinates(ra=args.ra, dec=args.dec)
     file_paths = [Path(x) for x in xmatch_filenames_df['savepath'].tolist()]
     logger.info(f"Making cutout plots from {len(file_paths)} files.")
     make_cutout_plots_from_filelist(file_paths, args.ra, args.dec, args.output,
-                                    half_width=args.half_width, n_sigma=args.n_sigma)
+                                    half_width=args.half_width, n_sigma=args.n_sigma,
+                                    annulus_r_in=args.annulus_r_in, annulus_r_out=args.annulus_r_out,
+                                    aperture_radius=args.aperture_radius)
