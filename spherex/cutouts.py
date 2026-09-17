@@ -18,6 +18,8 @@ from spherex.retrieve_files import get_images_within_coordinates
 
 logger = logging.getLogger(__name__)
 
+logger.setLevel('WARNING')
+
 
 def get_observation_log(filelist, ra, dec):
     """
