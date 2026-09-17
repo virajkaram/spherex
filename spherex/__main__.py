@@ -62,6 +62,8 @@ if __name__ == "__main__":
                                         output_dir=output_directory,
                                         plot_cutouts=args.plot_cutouts,
                                         qr_version=args.qr_version,
+                                        annulus_inner_radius=args.annulus_r_in,
+                                        annulus_outer_radius=args.annulus_r_out,
                                         )
 
     if (args.ra is not None) and (args.dec is not None):
@@ -71,8 +73,8 @@ if __name__ == "__main__":
                                     output_dir=output_directory,
                                     plot_cutouts=args.plot_cutouts,
                                     qr_version=args.qr_version,
-                                    annulus_r_in=args.annulus_r_in,
-                                    annulus_r_out=args.annulus_r_out,
+                                    annulus_inner_radius=args.annulus_r_in,
+                                    annulus_outer_radius=args.annulus_r_out,
                                     )
 
     logger.info(f"Output directory: {output_directory}")
